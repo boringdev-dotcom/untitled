@@ -126,3 +126,35 @@ export const ALL_FAITHS: Faith[] = [
   "buddhism",
   "judaism",
 ];
+
+// --- Live Council types ---
+
+export type LiveMessageType =
+  | "speaker_start"
+  | "speaker_end"
+  | "audio"
+  | "transcript"
+  | "round_start"
+  | "status"
+  | "complete"
+  | "error";
+
+export interface LiveMessage {
+  type: LiveMessageType;
+  faith?: string;
+  agent_name?: string;
+  data?: string;
+  text?: string;
+  round?: number;
+  label?: string;
+  turn?: number;
+}
+
+export interface LiveTranscriptEntry {
+  faith: string;
+  agentName: string;
+  text: string;
+  round: number;
+}
+
+export type LivePhase = "idle" | "connecting" | "live" | "complete" | "error";

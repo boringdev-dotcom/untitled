@@ -16,6 +16,7 @@ interface Props {
   onCancel: () => void;
   selectedFaiths: Faith[];
   onToggleFaith: (faith: Faith) => void;
+  liveMode?: boolean;
 }
 
 export function QuestionInput({
@@ -24,6 +25,7 @@ export function QuestionInput({
   onCancel,
   selectedFaiths,
   onToggleFaith,
+  liveMode = false,
 }: Props) {
   const [question, setQuestion] = useState("");
 
@@ -77,9 +79,15 @@ export function QuestionInput({
                 disabled={!question.trim() || selectedFaiths.length === 0}
                 className="px-6 py-2.5 rounded-lg bg-accent hover:bg-accent/80 text-white
                            font-medium transition-colors disabled:opacity-40
-                           disabled:cursor-not-allowed cursor-pointer text-sm"
+                           disabled:cursor-not-allowed cursor-pointer text-sm flex items-center gap-2"
               >
-                Ask the Council
+                {liveMode && (
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                    <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                  </svg>
+                )}
+                {liveMode ? "Start Live Discussion" : "Ask the Council"}
               </button>
             )}
           </div>

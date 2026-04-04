@@ -1,16 +1,19 @@
 from __future__ import annotations
 
-import json
+import logging
 from collections.abc import Iterator
 
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from sse_starlette.sse import EventSourceResponse
 
 from council.council import CouncilOrchestrator
 from council.db import close_db, create_session, init_db, load_session, update_session_events
+from council.live_council import LiveCouncilOrchestrator
 from council.schemas import CouncilEvent, QuestionRequest
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Council of Faiths", version="0.1.0")
 
@@ -76,6 +79,50 @@ async def get_session(session_id: str):
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
     return session
+
+
+ALL_FAITH_KEYS = ["hinduism", "islam", "christianity", "buddhism", "judaism"]
+
+
+@app.websocket("/ws/council/live")
+async def live_council(websocket: WebSocket):
+    await websocket.accept()
+    orchestrator: LiveCouncilOrchestrator | None = None
+    try:
+        init_msg = await websocket.receive_json()
+        question = init_msg.get("question", "").strip()
+        if not question:
+            await websocket.send_json({"type": "error", "text": "No question provided"})
+            await websocket.close()
+            return
+
+        faiths = init_msg.get("faiths", ALL_FAITH_KEYS)
+        num_rounds = init_msg.get("rounds", 2)
+
+        async def send_to_client(msg: dict) -> None:
+            await websocket.send_json(msg)
+
+        orchestrator = LiveCouncilOrchestrator(
+            question=question,
+            faiths=faiths,
+            send_to_client=send_to_client,
+            num_rounds=num_rounds,
+        )
+
+        await orchestrator.start()
+        await orchestrator.run_discussion()
+        await websocket.send_json({"type": "complete"})
+    except WebSocketDisconnect:
+        logger.info("Live council client disconnected")
+    except Exception:
+        logger.exception("Live council error")
+        try:
+            await websocket.send_json({"type": "error", "text": "An unexpected error occurred"})
+        except Exception:
+            pass
+    finally:
+        if orchestrator:
+            await orchestrator.cancel()
 
 
 @app.get("/api/health")
