@@ -34,7 +34,8 @@ export function useCouncilStream() {
         const body: Record<string, unknown> = { question };
         if (faiths && faiths.length > 0) body.faiths = faiths;
 
-        const response = await fetch("/api/council/ask", {
+        const apiBase = import.meta.env.VITE_API_URL || "";
+        const response = await fetch(`${apiBase}/api/council/ask`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
@@ -92,7 +93,7 @@ export function useCouncilStream() {
 
   const cancel = useCallback(() => {
     abortRef.current?.abort();
-    setState((prev) => ({ ...prev, isLoading: false }));
+    setState({ events: [], isLoading: false, error: null, currentPhase: null });
   }, []);
 
   return { ...state, ask, cancel };

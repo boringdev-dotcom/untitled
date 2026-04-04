@@ -1,13 +1,35 @@
+import { useCallback, useState } from "react";
 import { CouncilSession } from "./components/CouncilSession";
+import { CouncilShowcase } from "./components/CouncilShowcase";
 import { QuestionInput } from "./components/QuestionInput";
 import { useCouncilStream } from "./hooks/useCouncilStream";
-import { FAITH_META } from "./types";
-
-const faithValues = Object.values(FAITH_META);
+import type { Faith } from "./types";
+import { ALL_FAITHS } from "./types";
 
 function App() {
   const { events, isLoading, error, currentPhase, ask, cancel } =
     useCouncilStream();
+
+  const [selectedFaiths, setSelectedFaiths] = useState<Faith[]>([...ALL_FAITHS]);
+  const [submittedQuestion, setSubmittedQuestion] = useState("");
+
+  const hasSession = events.length > 0 || isLoading;
+
+  const handleToggleFaith = useCallback((faith: Faith) => {
+    setSelectedFaiths((prev) =>
+      prev.includes(faith)
+        ? prev.filter((f) => f !== faith)
+        : [...prev, faith]
+    );
+  }, []);
+
+  const handleSubmit = useCallback(
+    (question: string, faiths?: Faith[]) => {
+      setSubmittedQuestion(question);
+      ask(question, faiths);
+    },
+    [ask]
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -22,40 +44,50 @@ function App() {
               Multi-agent scripture discussion platform
             </p>
           </div>
-          <div className="flex gap-1.5">
-            {faithValues.map((f) => (
-              <span
-                key={f.key}
-                title={f.label}
-                className="text-lg cursor-default"
-              >
-                {f.icon}
-              </span>
-            ))}
-          </div>
+          {hasSession && (
+            <button
+              onClick={() => {
+                cancel();
+                setSubmittedQuestion("");
+              }}
+              className="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-lg
+                         bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+            >
+              New Question
+            </button>
+          )}
         </div>
       </header>
 
       {/* Main */}
-      <main className="flex-1 px-6 py-12">
-        {/* Hero — only shown before first query */}
-        {events.length === 0 && !isLoading && (
-          <div className="text-center mb-10 max-w-2xl mx-auto">
-            <h2 className="text-4xl font-extrabold text-white mb-3 tracking-tight">
-              Seek wisdom from the world's traditions
-            </h2>
-            <p className="text-gray-400 leading-relaxed">
-              Ask a philosophical question and hear perspectives from scholars
-              of Hinduism, Islam, Christianity, Buddhism, and Judaism — each
-              grounded exclusively in their sacred scriptures.
-            </p>
-          </div>
+      <main className="flex-1 px-6 py-10">
+        {!hasSession && (
+          <>
+            {/* Hero */}
+            <div className="text-center mb-10 max-w-2xl mx-auto">
+              <h2 className="text-4xl font-extrabold text-white mb-3 tracking-tight">
+                Seek wisdom from the world's traditions
+              </h2>
+              <p className="text-gray-400 leading-relaxed">
+                Ask a philosophical question and hear perspectives from scholars
+                of the world's great faiths — each grounded exclusively in
+                their sacred scriptures.
+              </p>
+            </div>
+
+            {/* Council Showcase */}
+            <div className="mb-12">
+              <CouncilShowcase />
+            </div>
+          </>
         )}
 
         <QuestionInput
-          onSubmit={(q) => ask(q)}
+          onSubmit={handleSubmit}
           isLoading={isLoading}
           onCancel={cancel}
+          selectedFaiths={selectedFaiths}
+          onToggleFaith={handleToggleFaith}
         />
 
         {error && (
@@ -68,6 +100,8 @@ function App() {
           events={events}
           isLoading={isLoading}
           currentPhase={currentPhase}
+          question={submittedQuestion}
+          faiths={selectedFaiths}
         />
       </main>
 

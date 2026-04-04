@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@source "../node_modules/streamdown/dist/*.js";
 
 @theme {
   --color-hindu: #ff9933;
@@ -10,8 +12,85 @@
   --color-surface-2: #16213e;
   --color-surface-3: #0f3460;
   --color-accent: #e94560;
+
+  --animate-fade-slide-up: fadeSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-glow-pulse: glowPulse 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.5s ease-in-out infinite;
 }
 
 body {
   @apply bg-surface text-gray-100 antialiased;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 8px 2px var(--glow-color, rgba(233, 69, 96, 0.4));
+  }
+  50% {
+    box-shadow: 0 0 20px 6px var(--glow-color, rgba(233, 69, 96, 0.6));
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.stagger-item {
+  animation: fadeSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-item:nth-child(2) { animation-delay: 100ms; }
+.stagger-item:nth-child(3) { animation-delay: 200ms; }
+.stagger-item:nth-child(4) { animation-delay: 300ms; }
+.stagger-item:nth-child(5) { animation-delay: 400ms; }
+
+.shimmer-bg {
+  background: linear-gradient(
+    90deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-item,
+  .shimmer-bg {
+    animation: none;
+  }
+}
+
+.prose :where(h1, h2, h3, h4, h5, h6):first-child {
+  margin-top: 0;
 }

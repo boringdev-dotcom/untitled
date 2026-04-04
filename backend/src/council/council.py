@@ -4,6 +4,7 @@ import concurrent.futures
 from collections.abc import Iterator
 
 from council.agents import FaithAgent
+from council.analysis import CouncilAnalyzer
 from council.personas.buddhist import BUDDHIST
 from council.personas.christian import CHRISTIAN
 from council.personas.hindu import HINDU
@@ -23,6 +24,7 @@ class CouncilOrchestrator:
             personas = [p for p in ALL_PERSONAS if p.faith in faith_set]
         self.agents = [FaithAgent(p) for p in personas]
         self.synthesizer = ReportSynthesizer()
+        self.analyzer = CouncilAnalyzer()
 
     def run_session(self, question: str) -> Iterator[CouncilEvent]:
         """Run the full 3-phase council discussion, yielding events as they complete."""
@@ -67,4 +69,12 @@ class CouncilOrchestrator:
         yield CouncilEvent(
             phase="report",
             content=report,
+        )
+
+        # --- Phase 4: Structured analysis for visualizations ---
+        analysis_data = self.analyzer.analyze(question, opinions, rebuttals)
+        yield CouncilEvent(
+            phase="analysis",
+            content="",
+            analysis=analysis_data,
         )

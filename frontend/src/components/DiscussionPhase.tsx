@@ -1,27 +1,28 @@
 import type { CouncilEvent, Phase } from "../types";
 import { AgentCard } from "./AgentCard";
+import { CollapsibleSection } from "./CollapsibleSection";
+import { ReportCard } from "./ReportCard";
 
-const PHASE_CONFIG: Record<
-  Phase,
-  { title: string; description: string; badge: string }
-> = {
+const PHASE_CONFIG: Record<Phase, { title: string; description: string }> = {
   opinion: {
     title: "Initial Opinions",
     description:
       "Each scholar shares their perspective grounded in their sacred scriptures.",
-    badge: "Phase 1",
   },
   rebuttal: {
     title: "Cross-Examination",
     description:
       "Scholars review each other's positions — agreeing, disagreeing, and finding common ground.",
-    badge: "Phase 2",
   },
   report: {
     title: "Final Synthesis",
     description:
       "An impartial moderator synthesizes the council's discussion into a balanced report.",
-    badge: "Phase 3",
+  },
+  analysis: {
+    title: "Council Analytics",
+    description:
+      "Quantitative analysis of the council's discussion.",
   },
 };
 
@@ -33,23 +34,41 @@ interface Props {
 export function DiscussionPhase({ phase, events }: Props) {
   const config = PHASE_CONFIG[phase];
 
+  if (phase === "report" && events.length > 0) {
+    return (
+      <CollapsibleSection
+        title={config.title}
+        description={config.description}
+        badge={`${events.length} report`}
+      >
+        <ReportCard event={events[0]} />
+      </CollapsibleSection>
+    );
+  }
+
   return (
-    <section className="mb-10">
-      <div className="flex items-center gap-3 mb-2">
-        <span
-          className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full
-                     bg-accent/20 text-accent"
-        >
-          {config.badge}
-        </span>
-        <h2 className="text-xl font-bold text-white">{config.title}</h2>
-      </div>
-      <p className="text-sm text-gray-400 mb-5">{config.description}</p>
-      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-1">
+    <CollapsibleSection
+      title={config.title}
+      description={config.description}
+      badge={`${events.length} response${events.length !== 1 ? "s" : ""}`}
+    >
+      <div
+        className={`grid gap-4 ${
+          phase === "opinion"
+            ? "grid-cols-1 lg:grid-cols-2"
+            : "grid-cols-1"
+        }`}
+      >
         {events.map((event, i) => (
-          <AgentCard key={`${phase}-${event.faith}-${i}`} event={event} />
+          <div
+            key={`${phase}-${event.faith}-${i}`}
+            className="stagger-item"
+            style={{ animationDelay: `${i * 100}ms` }}
+          >
+            <AgentCard event={event} />
+          </div>
         ))}
       </div>
-    </section>
+    </CollapsibleSection>
   );
 }
