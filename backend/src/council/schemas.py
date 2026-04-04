@@ -90,9 +90,10 @@ class CouncilAnalysis(BaseModel):
 
 
 class CouncilEvent(BaseModel):
-    phase: Literal["opinion", "rebuttal", "report", "analysis"]
+    phase: Literal["opinion", "rebuttal", "report", "analysis", "session_saved"]
     faith: str | None = None
     agent_name: str | None = None
     content: str
     scripture_refs: list[ScriptureChunk] = []
     analysis: CouncilAnalysis | None = None
+    session_id: str | None = None

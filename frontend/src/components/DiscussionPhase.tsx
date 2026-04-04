@@ -24,6 +24,10 @@ const PHASE_CONFIG: Record<Phase, { title: string; description: string }> = {
     description:
       "Quantitative analysis of the council's discussion.",
   },
+  session_saved: {
+    title: "Session Saved",
+    description: "This session has been saved and can be shared.",
+  },
 };
 
 interface Props {

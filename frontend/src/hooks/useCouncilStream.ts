@@ -6,6 +6,7 @@ interface CouncilState {
   isLoading: boolean;
   error: string | null;
   currentPhase: string | null;
+  sessionId: string | null;
 }
 
 export function useCouncilStream() {
@@ -14,6 +15,7 @@ export function useCouncilStream() {
     isLoading: false,
     error: null,
     currentPhase: null,
+    sessionId: null,
   });
   const abortRef = useRef<AbortController | null>(null);
 
@@ -28,6 +30,7 @@ export function useCouncilStream() {
         isLoading: true,
         error: null,
         currentPhase: null,
+        sessionId: null,
       });
 
       try {
@@ -66,11 +69,18 @@ export function useCouncilStream() {
               if (!jsonStr) continue;
               try {
                 const event: CouncilEvent = JSON.parse(jsonStr);
-                setState((prev) => ({
-                  ...prev,
-                  events: [...prev.events, event],
-                  currentPhase: event.phase,
-                }));
+                if (event.phase === "session_saved" && event.session_id) {
+                  setState((prev) => ({
+                    ...prev,
+                    sessionId: event.session_id ?? null,
+                  }));
+                } else {
+                  setState((prev) => ({
+                    ...prev,
+                    events: [...prev.events, event],
+                    currentPhase: event.phase,
+                  }));
+                }
               } catch {
                 // skip malformed lines
               }
@@ -93,7 +103,7 @@ export function useCouncilStream() {
 
   const cancel = useCallback(() => {
     abortRef.current?.abort();
-    setState({ events: [], isLoading: false, error: null, currentPhase: null });
+    setState({ events: [], isLoading: false, error: null, currentPhase: null, sessionId: null });
   }, []);
 
   return { ...state, ask, cancel };

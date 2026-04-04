@@ -5,7 +5,7 @@ export type Faith =
   | "buddhism"
   | "judaism";
 
-export type Phase = "opinion" | "rebuttal" | "report" | "analysis";
+export type Phase = "opinion" | "rebuttal" | "report" | "analysis" | "session_saved";
 
 export interface ScriptureChunk {
   id: number;
@@ -50,6 +50,15 @@ export interface CouncilEvent {
   content: string;
   scripture_refs: ScriptureChunk[];
   analysis?: CouncilAnalysis | null;
+  session_id?: string | null;
+}
+
+export interface SavedSession {
+  id: string;
+  question: string;
+  faiths: string[];
+  events: CouncilEvent[];
+  created_at: string | null;
 }
 
 export interface FaithMeta {

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+import secrets
+
 import psycopg
 from pgvector.psycopg import register_vector
 
@@ -63,6 +66,52 @@ def init_db() -> None:
         END
         $$;
     """)
+
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS council_sessions (
+            id TEXT PRIMARY KEY,
+            question TEXT NOT NULL,
+            faiths JSONB NOT NULL,
+            events JSONB NOT NULL,
+            created_at TIMESTAMPTZ DEFAULT NOW()
+        )
+    """)
+
+
+def create_session(question: str, faiths: list[str]) -> str:
+    session_id = secrets.token_urlsafe(8)
+    conn = get_connection()
+    conn.execute(
+        "INSERT INTO council_sessions (id, question, faiths, events) VALUES (%s, %s, %s, %s)",
+        (session_id, question, json.dumps(faiths), "[]"),
+    )
+    return session_id
+
+
+def update_session_events(session_id: str, events: list[dict]) -> None:
+    conn = get_connection()
+    conn.execute(
+        "UPDATE council_sessions SET events = %s WHERE id = %s",
+        (json.dumps(events), session_id),
+    )
+
+
+def load_session(session_id: str) -> dict | None:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT question, faiths, events, created_at FROM council_sessions WHERE id = %s",
+        (session_id,),
+    ).fetchone()
+    if row is None:
+        return None
+    return {
+        "id": session_id,
+        "question": row[0],
+        "faiths": row[1] if isinstance(row[1], list) else json.loads(row[1]),
+        "events": row[2] if isinstance(row[2], list) else json.loads(row[2]),
+        "created_at": row[3].isoformat() if row[3] else None,
+    }
 
 
 def close_db() -> None:

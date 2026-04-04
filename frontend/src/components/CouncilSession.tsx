@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { CouncilEvent, Faith, Phase } from "../types";
 import { AnalysisDashboard } from "./AnalysisDashboard";
 import { CouncilAvatarBar } from "./CouncilAvatarBar";
@@ -10,6 +11,7 @@ interface Props {
   currentPhase: string | null;
   question: string;
   faiths: Faith[];
+  sessionId?: string | null;
 }
 
 const DISPLAY_PHASES: Phase[] = ["opinion", "rebuttal", "report"];
@@ -20,7 +22,10 @@ export function CouncilSession({
   currentPhase,
   question,
   faiths,
+  sessionId,
 }: Props) {
+  const [copied, setCopied] = useState(false);
+
   if (events.length === 0 && !isLoading) return null;
 
   const grouped: Record<string, CouncilEvent[]> = {
@@ -54,14 +59,49 @@ export function CouncilSession({
   const analysisEvent = grouped.analysis.find((e) => e.analysis);
   const analysisData = analysisEvent?.analysis ?? null;
 
+  const handleShare = () => {
+    if (!sessionId) return;
+    const url = `${window.location.origin}/s/${sessionId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto mt-8">
       {/* Question banner */}
       <div className="stagger-item mb-6 px-5 py-4 rounded-xl bg-surface-3/50 border border-white/5">
-        <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-          Question before the Council
-        </p>
-        <p className="text-white font-medium leading-relaxed">{question}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+              Question before the Council
+            </p>
+            <p className="text-white font-medium leading-relaxed">{question}</p>
+          </div>
+          {sessionId && (
+            <button
+              onClick={handleShare}
+              className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs
+                         bg-accent/10 text-accent hover:bg-accent/20 transition-colors cursor-pointer"
+            >
+              {copied ? (
+                <>
+                  <span>&#10003;</span> Copied!
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
+                    <polyline points="16 6 12 2 8 6" />
+                    <line x1="12" y1="2" x2="12" y2="15" />
+                  </svg>
+                  Share
+                </>
+              )}
+            </button>
+          )}
+        </div>
       </div>
 
       <PhaseTimeline
