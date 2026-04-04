@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-hindu: #ff9933;
+  --color-islam: #009933;
+  --color-christian: #4169e1;
+  --color-buddhist: #ffcc00;
+  --color-jewish: #0038b8;
+  --color-surface: #1a1a2e;
+  --color-surface-2: #16213e;
+  --color-surface-3: #0f3460;
+  --color-accent: #e94560;
+}
+
+body {
+  @apply bg-surface text-gray-100 antialiased;
+}
