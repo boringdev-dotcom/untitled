@@ -9,6 +9,7 @@ import { useLiveCouncil } from "./hooks/useLiveCouncil";
 import { useSharedSession } from "./hooks/useSharedSession";
 import type { Faith } from "./types";
 import { ALL_FAITHS } from "./types";
+import { DEMO_SESSION } from "./utils/demoData";
 
 type CouncilMode = "ask" | "listen";
 
@@ -159,8 +160,13 @@ function Footer() {
   );
 }
 
+function isDemoMode(): boolean {
+  return new URLSearchParams(window.location.search).get("demo") === "session";
+}
+
 function App() {
   const sharedId = useMemo(() => getSharedSessionId(), []);
+  const demoMode = useMemo(() => isDemoMode(), []);
   const shared = useSharedSession(sharedId);
 
   const { events, isLoading, error, currentPhase, sessionId, ask, cancel } =
@@ -172,9 +178,14 @@ function App() {
   const [selectedFaiths, setSelectedFaiths] = useState<Faith[]>([...ALL_FAITHS]);
   const [submittedQuestion, setSubmittedQuestion] = useState("");
 
-  const hasSession = events.length > 0 || isLoading;
+  const hasSession = events.length > 0 || isLoading || demoMode;
   const hasLiveSession = live.phase !== "idle";
   const isSharedView = sharedId !== null;
+
+  const activeEvents = demoMode ? DEMO_SESSION.events : events;
+  const activeQuestion = demoMode ? DEMO_SESSION.question : submittedQuestion;
+  const activeSessionId = demoMode ? DEMO_SESSION.id : sessionId;
+  const activeFaiths = demoMode ? (DEMO_SESSION.faiths as Faith[]) : selectedFaiths;
 
   useEffect(() => {
     if (sessionId && window.location.pathname !== `/s/${sessionId}`) {
@@ -382,12 +393,12 @@ function App() {
 
         {mode === "ask" && (
           <CouncilSession
-            events={events}
+            events={activeEvents}
             isLoading={isLoading}
             currentPhase={currentPhase}
-            question={submittedQuestion}
-            faiths={selectedFaiths}
-            sessionId={sessionId}
+            question={activeQuestion}
+            faiths={activeFaiths}
+            sessionId={activeSessionId}
           />
         )}
 

@@ -72,12 +72,16 @@ export function ScriptureStats({ opinionEvents }: Props) {
                     {count} refs
                   </span>
                 </div>
-                <div className="w-full h-1 rounded-full bg-tertiary-fixed/15 overflow-hidden">
+                <div
+                  className="w-full h-1.5 rounded-full overflow-hidden"
+                  style={{ background: "rgba(255,255,255,0.12)" }}
+                >
                   <div
                     className="h-full rounded-full transition-all duration-1000 ease-out"
                     style={{
                       width: `${pct}%`,
-                      background: `linear-gradient(to right, ${meta.color}, color-mix(in srgb, ${meta.color} 60%, var(--color-secondary)))`,
+                      background: `linear-gradient(to right, ${meta.color}, color-mix(in srgb, ${meta.color} 70%, #e9c176))`,
+                      boxShadow: `0 0 8px ${meta.color}`,
                     }}
                   />
                 </div>
