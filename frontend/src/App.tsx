@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CouncilSession } from "./components/CouncilSession";
 import { CouncilShowcase } from "./components/CouncilShowcase";
+import { Icon } from "./components/Icon";
 import { LiveCouncilSession } from "./components/LiveCouncilSession";
 import { QuestionInput } from "./components/QuestionInput";
 import { useCouncilStream } from "./hooks/useCouncilStream";
@@ -14,6 +15,148 @@ type CouncilMode = "ask" | "listen";
 function getSharedSessionId(): string | null {
   const match = window.location.pathname.match(/^\/s\/(.+)$/);
   return match ? match[1] : null;
+}
+
+function TopNav({
+  showReset,
+  onReset,
+  resetLabel,
+}: {
+  showReset?: boolean;
+  onReset?: () => void;
+  resetLabel?: string;
+}) {
+  return (
+    <nav className="glass-nav sticky top-0 z-40 border-b border-outline-variant/20">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 md:px-10 py-5">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-sm wax-seal flex items-center justify-center text-on-primary">
+            <Icon name="menu_book" filled className="text-[20px]" />
+          </div>
+          <div className="leading-tight">
+            <div className="font-headline italic font-bold text-xl text-primary tracking-tight">
+              The Scriptorium
+            </div>
+            <div className="font-label text-[10px] uppercase tracking-[0.3em] text-secondary">
+              Council of Faiths
+            </div>
+          </div>
+        </div>
+        <div className="hidden md:flex items-center gap-10">
+          <a
+            className="font-label text-[11px] uppercase tracking-[0.25em] text-on-surface-variant hover:text-primary transition-colors"
+            href="#"
+          >
+            Assembly
+          </a>
+          <a
+            className="font-label text-[11px] uppercase tracking-[0.25em] text-on-surface-variant hover:text-primary transition-colors"
+            href="#"
+          >
+            Disputations
+          </a>
+          <a
+            className="font-label text-[11px] uppercase tracking-[0.25em] text-on-surface-variant hover:text-primary transition-colors"
+            href="#"
+          >
+            Archive
+          </a>
+        </div>
+        <div className="flex items-center gap-3">
+          {showReset && onReset && (
+            <button
+              onClick={onReset}
+              className="font-label text-[11px] uppercase tracking-[0.2em] text-secondary hover:text-primary border-b border-secondary/40 hover:border-primary transition-colors pb-0.5 cursor-pointer"
+            >
+              {resetLabel ?? "New Inquiry"}
+            </button>
+          )}
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="mt-24 bg-tertiary text-tertiary-fixed">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 py-12 grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
+        <div>
+          <div className="font-headline italic text-lg text-secondary-fixed-dim mb-3">
+            The Scriptorium
+          </div>
+          <p className="font-label text-[10px] uppercase tracking-[0.2em] leading-loose text-tertiary-fixed/70 max-w-xs">
+            Dedicated to the preservation of universal wisdom and the advancement
+            of interfaith dialogue through digital scholarship.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <ul className="space-y-3">
+            <li>
+              <a
+                className="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary-fixed/70 hover:text-surface transition-colors"
+                href="#"
+              >
+                Abrahamic Traditions
+              </a>
+            </li>
+            <li>
+              <a
+                className="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary-fixed/70 hover:text-surface transition-colors"
+                href="#"
+              >
+                Dharmic Paths
+              </a>
+            </li>
+            <li>
+              <a
+                className="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary-fixed/70 hover:text-surface transition-colors"
+                href="#"
+              >
+                East Asian Wisdom
+              </a>
+            </li>
+          </ul>
+          <ul className="space-y-3">
+            <li>
+              <a
+                className="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary-fixed/70 hover:text-surface transition-colors"
+                href="#"
+              >
+                Academic Archive
+              </a>
+            </li>
+            <li>
+              <a
+                className="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary-fixed/70 hover:text-surface transition-colors"
+                href="#"
+              >
+                Citations
+              </a>
+            </li>
+            <li>
+              <a
+                className="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary-fixed/70 hover:text-surface transition-colors"
+                href="#"
+              >
+                Privacy
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div className="flex flex-col md:items-end gap-4">
+          <div className="flex gap-5 text-secondary-fixed-dim">
+            <Icon name="public" />
+            <Icon name="history_edu" />
+            <Icon name="auto_stories" />
+          </div>
+          <p className="font-label text-[10px] uppercase tracking-[0.2em] text-tertiary-fixed/50 md:text-right">
+            Powered by Gemini · A.S. MMXXVI
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
 }
 
 function App() {
@@ -74,38 +217,28 @@ function App() {
   if (isSharedView) {
     return (
       <div className="min-h-screen flex flex-col">
-        <header className="border-b border-white/5 bg-surface-2/50 backdrop-blur-sm sticky top-0 z-10">
-          <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">
-                Council of Faiths
-              </h1>
-              <p className="text-xs text-gray-500">
-                Shared council session
-              </p>
-            </div>
-            <button
-              onClick={handleGoHome}
-              className="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-lg
-                         bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-            >
-              Ask Your Own Question
-            </button>
-          </div>
-        </header>
+        <TopNav showReset onReset={handleGoHome} resetLabel="Ask Your Own" />
 
-        <main className="flex-1 px-6 py-10">
+        <main className="flex-1 px-6 md:px-10 py-10 max-w-7xl w-full mx-auto">
           {shared.isLoading && (
             <div className="flex items-center justify-center py-20 gap-3">
-              <div className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-              <div className="h-2 w-2 rounded-full bg-accent animate-pulse" style={{ animationDelay: "0.2s" }} />
-              <div className="h-2 w-2 rounded-full bg-accent animate-pulse" style={{ animationDelay: "0.4s" }} />
-              <span className="text-sm text-gray-400 ml-2">Loading session...</span>
+              <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+              <div
+                className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+                style={{ animationDelay: "0.2s" }}
+              />
+              <div
+                className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+                style={{ animationDelay: "0.4s" }}
+              />
+              <span className="font-label text-xs uppercase tracking-[0.25em] text-secondary ml-3">
+                Loading session
+              </span>
             </div>
           )}
 
           {shared.error && (
-            <div className="max-w-3xl mx-auto mt-6 p-4 rounded-xl bg-red-900/30 border border-red-500/30 text-red-300 text-sm text-center">
+            <div className="max-w-3xl mx-auto mt-6 p-5 rounded-sm bg-error-container/40 border-l-2 border-error text-on-error-container text-sm">
               {shared.error === "Session not found"
                 ? "This session link is invalid or has expired."
                 : shared.error}
@@ -124,104 +257,112 @@ function App() {
           )}
         </main>
 
-        <footer className="border-t border-white/5 py-4 text-center text-xs text-gray-600">
-          Council of Faiths — Powered by Gemini
-        </footer>
+        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="border-b border-white/5 bg-surface-2/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">
-              Council of Faiths
-            </h1>
-            <p className="text-xs text-gray-500">
-              Multi-agent scripture discussion platform
-            </p>
-          </div>
-          {(hasSession || hasLiveSession) && (
-            <button
-              onClick={handleReset}
-              className="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-lg
-                         bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-            >
-              New Question
-            </button>
-          )}
-        </div>
-      </header>
+      <TopNav
+        showReset={hasSession || hasLiveSession}
+        onReset={handleReset}
+        resetLabel="New Inquiry"
+      />
 
-      {/* Main */}
-      <main className="flex-1 px-6 py-10">
+      <main className="flex-1 px-6 md:px-10 py-10 md:py-14 max-w-7xl w-full mx-auto relative">
         {!hasSession && !hasLiveSession && (
           <>
-            <div className="text-center mb-10 max-w-2xl mx-auto">
-              <h2 className="text-4xl font-extrabold text-white mb-3 tracking-tight">
-                Seek wisdom from the world's traditions
-              </h2>
-              <p className="text-gray-400 leading-relaxed">
-                Ask a philosophical question and hear perspectives from scholars
-                of the world's great faiths — each grounded exclusively in
-                their sacred scriptures.
+            <header className="max-w-3xl mx-auto text-center mb-12">
+              <div className="font-label text-[11px] uppercase tracking-[0.35em] text-secondary mb-5">
+                The Assembly
+              </div>
+              <h1 className="font-headline text-5xl md:text-6xl text-primary leading-[1.05] tracking-tight mb-6">
+                Council of <span className="italic">Faith</span>
+              </h1>
+              <div className="flex justify-center mb-6">
+                <span className="flourish" aria-hidden="true" />
+              </div>
+              <p className="text-lg text-on-surface-variant font-body leading-relaxed max-w-2xl mx-auto">
+                Convene voices across centuries and traditions. Ask a
+                philosophical question and let scholars of the world's great
+                faiths illuminate it — each grounded exclusively in their sacred
+                scriptures.
               </p>
-            </div>
+            </header>
 
             {/* Mode Toggle */}
-            <div className="flex items-center justify-center mb-10">
-              <div className="inline-flex rounded-xl bg-surface-2 border border-white/10 p-1">
+            <div className="flex items-center justify-center mb-12">
+              <div
+                role="tablist"
+                className="inline-flex rounded-sm bg-surface-container-high ghost-border p-1"
+              >
                 <button
+                  role="tab"
+                  aria-selected={mode === "ask"}
                   onClick={() => setMode("ask")}
-                  className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer flex items-center gap-2 ${
+                  className={`px-6 py-3 rounded-sm font-label text-[11px] uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center gap-2 ${
                     mode === "ask"
-                      ? "bg-accent text-white shadow-lg"
-                      : "text-gray-400 hover:text-gray-200"
+                      ? "wax-seal text-on-primary"
+                      : "text-on-surface-variant hover:text-primary"
                   }`}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-                  </svg>
+                  <Icon name="forum" className="text-[18px]" />
                   Ask the Council
                 </button>
                 <button
+                  role="tab"
+                  aria-selected={mode === "listen"}
                   onClick={() => setMode("listen")}
-                  className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all cursor-pointer flex items-center gap-2 ${
+                  className={`px-6 py-3 rounded-sm font-label text-[11px] uppercase tracking-[0.2em] transition-all cursor-pointer flex items-center gap-2 ${
                     mode === "listen"
-                      ? "bg-accent text-white shadow-lg"
-                      : "text-gray-400 hover:text-gray-200"
+                      ? "wax-seal text-on-primary"
+                      : "text-on-surface-variant hover:text-primary"
                   }`}
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
-                    <path d="M19 10v2a7 7 0 01-14 0v-2" />
-                    <line x1="12" y1="19" x2="12" y2="23" />
-                    <line x1="8" y1="23" x2="16" y2="23" />
-                  </svg>
+                  <Icon name="podcasts" className="text-[18px]" />
                   Listen Live
                 </button>
               </div>
             </div>
 
             {mode === "listen" && (
-              <div className="text-center mb-8 max-w-lg mx-auto">
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  The scholars will have a live spoken debate about your question,
-                  agreeing and disagreeing in real time — like a live audio space.
-                </p>
-              </div>
+              <p className="text-center mb-10 max-w-xl mx-auto text-sm text-on-surface-variant italic font-headline leading-relaxed">
+                The scholars will hold a live spoken disputation — agreeing,
+                contesting, and weaving citations in real time.
+              </p>
             )}
 
-            <div className="mb-12">
-              <CouncilShowcase />
-            </div>
+            <section className="mb-14">
+              <div className="flex items-end justify-between mb-8">
+                <div>
+                  <div className="font-label text-[11px] uppercase tracking-[0.3em] text-secondary mb-2">
+                    The Scholars
+                  </div>
+                  <h2 className="font-headline text-3xl italic text-on-surface">
+                    Browse the Council
+                  </h2>
+                </div>
+                <div className="hidden md:flex gap-5 text-[11px] font-label uppercase tracking-[0.2em] text-on-surface-variant/70">
+                  <span className="text-on-surface border-b border-secondary pb-0.5">
+                    All
+                  </span>
+                  <span className="cursor-pointer hover:text-on-surface transition-colors">
+                    Abrahamic
+                  </span>
+                  <span className="cursor-pointer hover:text-on-surface transition-colors">
+                    Dharmic
+                  </span>
+                </div>
+              </div>
+              <CouncilShowcase
+                selectedFaiths={selectedFaiths}
+                onToggleFaith={handleToggleFaith}
+              />
+            </section>
           </>
         )}
 
-        {/* Question input — shown when no active session */}
         {!hasSession && !hasLiveSession && (
           <QuestionInput
             onSubmit={handleSubmit}
@@ -233,14 +374,12 @@ function App() {
           />
         )}
 
-        {/* Ask mode errors */}
         {mode === "ask" && error && (
-          <div className="max-w-3xl mx-auto mt-6 p-4 rounded-xl bg-red-900/30 border border-red-500/30 text-red-300 text-sm">
+          <div className="max-w-3xl mx-auto mt-8 p-5 rounded-sm bg-error-container/40 border-l-2 border-error text-on-error-container text-sm">
             {error}
           </div>
         )}
 
-        {/* Ask mode session */}
         {mode === "ask" && (
           <CouncilSession
             events={events}
@@ -252,7 +391,6 @@ function App() {
           />
         )}
 
-        {/* Live mode session */}
         {mode === "listen" && hasLiveSession && (
           <LiveCouncilSession
             phase={live.phase}
@@ -270,10 +408,7 @@ function App() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-4 text-center text-xs text-gray-600">
-        Council of Faiths — Powered by Gemini
-      </footer>
+      <Footer />
     </div>
   );
 }

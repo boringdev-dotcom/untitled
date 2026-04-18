@@ -3,6 +3,7 @@ import type { CouncilEvent, Faith, Phase } from "../types";
 import { AnalysisDashboard } from "./AnalysisDashboard";
 import { CouncilAvatarBar } from "./CouncilAvatarBar";
 import { DiscussionPhase } from "./DiscussionPhase";
+import { Icon } from "./Icon";
 import { PhaseTimeline } from "./PhaseTimeline";
 
 interface Props {
@@ -39,14 +40,19 @@ export function CouncilSession({
   }
 
   const completedPhases: Phase[] = [];
-  if (grouped.opinion.length > 0 && currentPhase !== "opinion") completedPhases.push("opinion");
-  if (grouped.rebuttal.length > 0 && currentPhase !== "rebuttal") completedPhases.push("rebuttal");
-  if (grouped.report.length > 0 && currentPhase !== "report") completedPhases.push("report");
-  if (grouped.analysis.length > 0 && !isLoading) completedPhases.push("analysis");
+  if (grouped.opinion.length > 0 && currentPhase !== "opinion")
+    completedPhases.push("opinion");
+  if (grouped.rebuttal.length > 0 && currentPhase !== "rebuttal")
+    completedPhases.push("rebuttal");
+  if (grouped.report.length > 0 && currentPhase !== "report")
+    completedPhases.push("report");
+  if (grouped.analysis.length > 0 && !isLoading)
+    completedPhases.push("analysis");
 
-  const speakingFaith: Faith | null = isLoading && events.length > 0
-    ? (events[events.length - 1].faith as Faith | null)
-    : null;
+  const speakingFaith: Faith | null =
+    isLoading && events.length > 0
+      ? (events[events.length - 1].faith as Faith | null)
+      : null;
 
   const respondedFaiths: Faith[] = [
     ...new Set(
@@ -69,34 +75,31 @@ export function CouncilSession({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-8">
-      {/* Question banner */}
-      <div className="stagger-item mb-6 px-5 py-4 rounded-xl bg-surface-3/50 border border-white/5">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-              Question before the Council
-            </p>
-            <p className="text-white font-medium leading-relaxed">{question}</p>
-          </div>
+    <div className="w-full max-w-5xl mx-auto mt-8">
+      {/* Question Banner — the thesis */}
+      <div className="stagger-item mb-12 text-center">
+        <div className="font-label text-[10px] uppercase tracking-[0.3em] text-secondary mb-3">
+          Debate Session · The Inquiry
+        </div>
+        <h2 className="font-headline text-3xl md:text-5xl text-primary leading-[1.1] max-w-4xl mx-auto">
+          {question}
+        </h2>
+        <div className="flex items-center justify-center gap-4 mt-6">
+          <span className="flourish" aria-hidden="true" />
           {sessionId && (
             <button
               onClick={handleShare}
-              className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs
-                         bg-accent/10 text-accent hover:bg-accent/20 transition-colors cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 rounded-sm ghost-border bg-surface-container-low hover:bg-surface-container-lowest font-label text-[10px] uppercase tracking-[0.2em] text-secondary hover:text-primary transition-colors cursor-pointer"
             >
               {copied ? (
                 <>
-                  <span>&#10003;</span> Copied!
+                  <Icon name="check_circle" filled className="text-[14px]" />
+                  Link Copied
                 </>
               ) : (
                 <>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
-                    <polyline points="16 6 12 2 8 6" />
-                    <line x1="12" y1="2" x2="12" y2="15" />
-                  </svg>
-                  Share
+                  <Icon name="link" className="text-[14px]" />
+                  Share Session
                 </>
               )}
             </button>
@@ -127,7 +130,6 @@ export function CouncilSession({
         );
       })}
 
-      {/* Analysis Dashboard */}
       {analysisData && (
         <AnalysisDashboard
           analysis={analysisData}
@@ -137,18 +139,24 @@ export function CouncilSession({
       )}
 
       {isLoading && (
-        <div className="flex items-center justify-center py-8 gap-3">
+        <div className="flex items-center justify-center py-10 gap-3">
           <div className="flex gap-1.5">
-            <div className="h-2 w-2 rounded-full bg-accent animate-pulse" />
-            <div className="h-2 w-2 rounded-full bg-accent animate-pulse" style={{ animationDelay: "0.2s" }} />
-            <div className="h-2 w-2 rounded-full bg-accent animate-pulse" style={{ animationDelay: "0.4s" }} />
+            <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+            <div
+              className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+              style={{ animationDelay: "0.2s" }}
+            />
+            <div
+              className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse"
+              style={{ animationDelay: "0.4s" }}
+            />
           </div>
-          <span className="text-sm text-gray-400">
-            {currentPhase === "opinion" && "Scholars are forming their opinions..."}
-            {currentPhase === "rebuttal" && "Cross-examination in progress..."}
-            {currentPhase === "report" && "Synthesizing final report..."}
-            {currentPhase === "analysis" && "Generating analytics..."}
-            {!currentPhase && "Convening the council..."}
+          <span className="font-label text-xs uppercase tracking-[0.25em] text-secondary ml-2">
+            {currentPhase === "opinion" && "Scholars forming opinions"}
+            {currentPhase === "rebuttal" && "Cross-examination in progress"}
+            {currentPhase === "report" && "Synthesizing final convergence"}
+            {currentPhase === "analysis" && "Generating analytics"}
+            {!currentPhase && "Convening the council"}
           </span>
         </div>
       )}

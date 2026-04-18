@@ -3,29 +3,178 @@
 @source "../node_modules/streamdown/dist/*.js";
 
 @theme {
-  --color-hindu: #ff9933;
-  --color-islam: #009933;
-  --color-christian: #4169e1;
-  --color-buddhist: #ffcc00;
-  --color-jewish: #0038b8;
-  --color-surface: #1a1a2e;
-  --color-surface-2: #16213e;
-  --color-surface-3: #0f3460;
-  --color-accent: #e94560;
+  /* Scriptorium — Parchment & Crimson palette */
+  --color-surface: #fcf9f0;
+  --color-surface-bright: #fcf9f0;
+  --color-surface-dim: #dddad1;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f6f3ea;
+  --color-surface-container: #f1eee5;
+  --color-surface-container-high: #ebe8df;
+  --color-surface-container-highest: #e5e2da;
+  --color-surface-variant: #e5e2da;
 
-  --animate-fade-slide-up: fadeSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  --animate-glow-pulse: glowPulse 2s ease-in-out infinite;
+  --color-on-surface: #1c1c17;
+  --color-on-surface-variant: #58413f;
+  --color-on-background: #1c1c17;
+  --color-background: #fcf9f0;
+
+  --color-primary: #6b0109;
+  --color-primary-container: #8c1d1d;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #ff9d95;
+  --color-primary-fixed: #ffdad6;
+
+  --color-secondary: #775a19;
+  --color-secondary-container: #fed488;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #785a1a;
+
+  --color-tertiary: #323232;
+  --color-tertiary-container: #494848;
+  --color-on-tertiary: #ffffff;
+
+  --color-outline: #8c716e;
+  --color-outline-variant: #dfbfbc;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+
+  /* Faith accent colors (keep brand recognition, warmed toward scriptorium palette) */
+  --color-hindu: #c8741a;
+  --color-islam: #2f6b3a;
+  --color-christian: #3b5998;
+  --color-buddhist: #b8871b;
+  --color-jewish: #1f3a8a;
+
+  --font-headline: "Noto Serif", "Times New Roman", serif;
+  --font-body: "Manrope", system-ui, sans-serif;
+  --font-label: "Manrope", system-ui, sans-serif;
+
+  --animate-fade-slide-up: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-page-turn: pageTurn 0.4s ease-out both;
   --animate-shimmer: shimmer 1.5s ease-in-out infinite;
 }
 
+html,
 body {
-  @apply bg-surface text-gray-100 antialiased;
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
 }
 
+body {
+  background-image:
+    radial-gradient(
+      1000px 600px at 80% -10%,
+      rgba(140, 29, 29, 0.04),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at -10% 110%,
+      rgba(119, 90, 25, 0.05),
+      transparent 60%
+    );
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.font-headline {
+  font-family: var(--font-headline);
+}
+.font-body {
+  font-family: var(--font-body);
+}
+.font-label {
+  font-family: var(--font-label);
+}
+
+/* Parchment noise texture overlay — use on wide panels */
+.parchment-texture {
+  position: relative;
+}
+.parchment-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+}
+
+/* Decorative flourish (gold thin rule with dot) used under headlines */
+.flourish {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.flourish::before,
+.flourish::after {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  background: var(--color-secondary);
+  opacity: 0.7;
+}
+
+/* Illuminated letter — drop cap for first paragraph of a report */
+.illuminated-letter::first-letter {
+  font-family: var(--font-headline);
+  font-weight: 700;
+  font-size: 4.5rem;
+  line-height: 0.8;
+  float: left;
+  margin-right: 0.5rem;
+  margin-top: 0.25rem;
+  color: var(--color-primary);
+}
+
+/* Wax-seal gradient for primary CTAs */
+.wax-seal {
+  background-image: linear-gradient(
+    180deg,
+    var(--color-primary-container) 0%,
+    var(--color-primary) 100%
+  );
+  box-shadow:
+    0 10px 24px -6px rgba(107, 1, 9, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+.wax-seal:hover {
+  box-shadow:
+    0 14px 30px -6px rgba(107, 1, 9, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* Ghost border — ultra-subtle boundary; still permitted per design MD at 15% */
+.ghost-border {
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 40%, transparent);
+}
+
+/* Ambient shadow — diffused, tinted rather than black */
+.ambient-shadow {
+  box-shadow: 0 20px 40px rgba(28, 28, 23, 0.06);
+}
+.ambient-shadow-lg {
+  box-shadow: 0 30px 60px -10px rgba(28, 28, 23, 0.1);
+}
+
+/* Glass top-nav backdrop */
+.glass-nav {
+  background-color: color-mix(in srgb, var(--color-surface) 82%, transparent);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+/* Keyframes */
 @keyframes fadeSlideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -33,13 +182,14 @@ body {
   }
 }
 
-@keyframes glowPulse {
-  0%,
-  100% {
-    box-shadow: 0 0 8px 2px var(--glow-color, rgba(233, 69, 96, 0.4));
+@keyframes pageTurn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px) rotateY(-4deg);
   }
-  50% {
-    box-shadow: 0 0 20px 6px var(--glow-color, rgba(233, 69, 96, 0.6));
+  to {
+    opacity: 1;
+    transform: translateX(0) rotateY(0);
   }
 }
 
@@ -58,26 +208,36 @@ body {
     opacity: 0.6;
   }
   100% {
-    transform: scale(1.5);
+    transform: scale(1.7);
     opacity: 0;
   }
 }
 
-.stagger-item {
-  animation: fadeSlideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+@keyframes candle-flicker {
+  0%, 100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
 }
 
+.stagger-item {
+  animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
 .stagger-item:nth-child(1) { animation-delay: 0ms; }
-.stagger-item:nth-child(2) { animation-delay: 100ms; }
-.stagger-item:nth-child(3) { animation-delay: 200ms; }
-.stagger-item:nth-child(4) { animation-delay: 300ms; }
-.stagger-item:nth-child(5) { animation-delay: 400ms; }
+.stagger-item:nth-child(2) { animation-delay: 90ms; }
+.stagger-item:nth-child(3) { animation-delay: 180ms; }
+.stagger-item:nth-child(4) { animation-delay: 270ms; }
+.stagger-item:nth-child(5) { animation-delay: 360ms; }
 
 .shimmer-bg {
   background: linear-gradient(
     90deg,
     transparent 25%,
-    rgba(255, 255, 255, 0.04) 50%,
+    rgba(107, 1, 9, 0.06) 50%,
     transparent 75%
   );
   background-size: 200% 100%;
@@ -91,6 +251,63 @@ body {
   }
 }
 
-.prose :where(h1, h2, h3, h4, h5, h6):first-child {
+/* Prose tuning for scholarly body copy */
+.prose-scriptorium {
+  color: var(--color-on-surface-variant);
+  font-family: var(--font-body);
+  line-height: 1.75;
+}
+.prose-scriptorium :where(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-headline);
+  color: var(--color-on-surface);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.prose-scriptorium :where(h1, h2, h3, h4, h5, h6):first-child {
   margin-top: 0;
+}
+.prose-scriptorium :where(strong) {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+.prose-scriptorium :where(em) {
+  font-family: var(--font-headline);
+  font-style: italic;
+  color: var(--color-on-surface);
+}
+.prose-scriptorium :where(a) {
+  color: var(--color-secondary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.prose-scriptorium :where(blockquote) {
+  border-left: 2px solid var(--color-secondary);
+  background: color-mix(in srgb, var(--color-secondary-container) 35%, transparent);
+  padding: 0.75rem 1rem;
+  font-family: var(--font-headline);
+  font-style: italic;
+  color: var(--color-on-surface);
+}
+.prose-scriptorium :where(code) {
+  background: var(--color-surface-container);
+  padding: 0.1em 0.35em;
+  border-radius: 2px;
+  font-size: 0.9em;
+}
+
+/* Custom thin scrollbar */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-outline-variant) 50%, transparent);
+  border-radius: 3px;
+}
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
 }

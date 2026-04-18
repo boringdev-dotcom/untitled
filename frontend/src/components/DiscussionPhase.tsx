@@ -3,30 +3,37 @@ import { AgentCard } from "./AgentCard";
 import { CollapsibleSection } from "./CollapsibleSection";
 import { ReportCard } from "./ReportCard";
 
-const PHASE_CONFIG: Record<Phase, { title: string; description: string }> = {
+const PHASE_CONFIG: Record<
+  Phase,
+  { title: string; description: string; eyebrow: string }
+> = {
   opinion: {
-    title: "Initial Opinions",
+    eyebrow: "Phase I",
+    title: "The Thesis",
     description:
-      "Each scholar shares their perspective grounded in their sacred scriptures.",
+      "Each scholar speaks in turn, grounded exclusively in their sacred scriptures.",
   },
   rebuttal: {
-    title: "Cross-Examination",
+    eyebrow: "Phase II",
+    title: "The Dialectic",
     description:
-      "Scholars review each other's positions — agreeing, disagreeing, and finding common ground.",
+      "The scholars contend with one another — agreeing, disputing, and sharpening the argument.",
   },
   report: {
-    title: "Final Synthesis",
+    eyebrow: "Phase III",
+    title: "The Convergence",
     description:
-      "An impartial moderator synthesizes the council's discussion into a balanced report.",
+      "An impartial scribe weaves the deliberation into a single, balanced synthesis.",
   },
   analysis: {
+    eyebrow: "Phase IV",
     title: "Council Analytics",
-    description:
-      "Quantitative analysis of the council's discussion.",
+    description: "A quantitative lens upon qualitative metaphysics.",
   },
   session_saved: {
+    eyebrow: "",
     title: "Session Saved",
-    description: "This session has been saved and can be shared.",
+    description: "This session has been archived and may be shared.",
   },
 };
 
@@ -41,9 +48,11 @@ export function DiscussionPhase({ phase, events }: Props) {
   if (phase === "report" && events.length > 0) {
     return (
       <CollapsibleSection
+        eyebrow={config.eyebrow}
         title={config.title}
         description={config.description}
-        badge={`${events.length} report`}
+        badge="Scribe's Conclusion"
+        defaultOpen
       >
         <ReportCard event={events[0]} />
       </CollapsibleSection>
@@ -52,12 +61,14 @@ export function DiscussionPhase({ phase, events }: Props) {
 
   return (
     <CollapsibleSection
+      eyebrow={config.eyebrow}
       title={config.title}
       description={config.description}
       badge={`${events.length} response${events.length !== 1 ? "s" : ""}`}
+      defaultOpen
     >
       <div
-        className={`grid gap-4 ${
+        className={`grid gap-6 ${
           phase === "opinion"
             ? "grid-cols-1 lg:grid-cols-2"
             : "grid-cols-1"

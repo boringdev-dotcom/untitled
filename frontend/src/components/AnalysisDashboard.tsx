@@ -11,21 +11,38 @@ interface Props {
   faiths: Faith[];
 }
 
-export function AnalysisDashboard({ analysis, opinionEvents, faiths }: Props) {
+export function AnalysisDashboard({
+  analysis,
+  opinionEvents,
+  faiths,
+}: Props) {
   return (
     <CollapsibleSection
+      eyebrow="Phase IV"
       title="Council Analytics"
-      description="Quantitative analysis of the council's discussion — agreement levels, key themes, and scripture usage."
+      description="A quantitative lens upon qualitative metaphysics — agreement, themes, and citation weight."
+      defaultOpen
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <AgreementMatrix agreements={analysis.agreements} faiths={faiths} />
-        <ConsensusGauge
-          consensus={analysis.overall_consensus}
-          strongestAgreement={analysis.strongest_agreement}
-          strongestDisagreement={analysis.strongest_disagreement}
-        />
-        <ThemeBreakdown themes={analysis.themes} />
-        <ScriptureStats opinionEvents={opinionEvents} />
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-5">
+          <ConsensusGauge
+            consensus={analysis.overall_consensus}
+            strongestAgreement={analysis.strongest_agreement}
+            strongestDisagreement={analysis.strongest_disagreement}
+          />
+        </div>
+        <div className="col-span-12 lg:col-span-7">
+          <AgreementMatrix
+            agreements={analysis.agreements}
+            faiths={faiths}
+          />
+        </div>
+        <div className="col-span-12 lg:col-span-7">
+          <ThemeBreakdown themes={analysis.themes} />
+        </div>
+        <div className="col-span-12 lg:col-span-5">
+          <ScriptureStats opinionEvents={opinionEvents} />
+        </div>
       </div>
     </CollapsibleSection>
   );
