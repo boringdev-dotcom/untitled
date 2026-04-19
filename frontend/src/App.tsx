@@ -6,6 +6,7 @@ import { LiveCouncilSession } from "./components/LiveCouncilSession";
 import { QuestionInput } from "./components/QuestionInput";
 import { useCouncilStream } from "./hooks/useCouncilStream";
 import { useLiveCouncil } from "./hooks/useLiveCouncil";
+import { useLiveCouncilDemo } from "./hooks/useLiveCouncilDemo";
 import { useSharedSession } from "./hooks/useSharedSession";
 import type { Faith } from "./types";
 import { ALL_FAITHS } from "./types";
@@ -160,32 +161,53 @@ function Footer() {
   );
 }
 
-function isDemoMode(): boolean {
-  return new URLSearchParams(window.location.search).get("demo") === "session";
+type DemoMode = null | "session" | "live";
+
+function getDemoMode(): DemoMode {
+  const v = new URLSearchParams(window.location.search).get("demo");
+  if (v === "session" || v === "live") return v;
+  return null;
 }
 
 function App() {
   const sharedId = useMemo(() => getSharedSessionId(), []);
-  const demoMode = useMemo(() => isDemoMode(), []);
+  const demoMode = useMemo(() => getDemoMode(), []);
+  const demoSessionMode = demoMode === "session";
+  const demoLiveMode = demoMode === "live";
   const shared = useSharedSession(sharedId);
 
   const { events, isLoading, error, currentPhase, sessionId, ask, cancel } =
     useCouncilStream();
 
-  const live = useLiveCouncil();
+  const realLive = useLiveCouncil();
+  const demoLive = useLiveCouncilDemo(demoLiveMode);
+  const live = demoLiveMode
+    ? ({
+        ...demoLive,
+        start: () => {},
+      } as unknown as typeof realLive)
+    : realLive;
 
-  const [mode, setMode] = useState<CouncilMode>("ask");
+  const [mode, setMode] = useState<CouncilMode>(
+    demoLiveMode ? "listen" : "ask"
+  );
   const [selectedFaiths, setSelectedFaiths] = useState<Faith[]>([...ALL_FAITHS]);
   const [submittedQuestion, setSubmittedQuestion] = useState("");
 
-  const hasSession = events.length > 0 || isLoading || demoMode;
+  const hasSession = events.length > 0 || isLoading || demoSessionMode;
   const hasLiveSession = live.phase !== "idle";
   const isSharedView = sharedId !== null;
 
-  const activeEvents = demoMode ? DEMO_SESSION.events : events;
-  const activeQuestion = demoMode ? DEMO_SESSION.question : submittedQuestion;
-  const activeSessionId = demoMode ? DEMO_SESSION.id : sessionId;
-  const activeFaiths = demoMode ? (DEMO_SESSION.faiths as Faith[]) : selectedFaiths;
+  const activeEvents = demoSessionMode ? DEMO_SESSION.events : events;
+  const activeQuestion = demoSessionMode
+    ? DEMO_SESSION.question
+    : demoLiveMode
+      ? demoLive.question
+      : submittedQuestion;
+  const activeSessionId = demoSessionMode ? DEMO_SESSION.id : sessionId;
+  const activeFaiths = demoSessionMode
+    ? (DEMO_SESSION.faiths as Faith[])
+    : selectedFaiths;
 
   useEffect(() => {
     if (sessionId && window.location.pathname !== `/s/${sessionId}`) {
@@ -405,7 +427,7 @@ function App() {
         {mode === "listen" && hasLiveSession && (
           <LiveCouncilSession
             phase={live.phase}
-            faiths={selectedFaiths}
+            faiths={demoLiveMode ? [...ALL_FAITHS] : selectedFaiths}
             activeSpeaker={live.activeSpeaker}
             transcripts={live.transcripts}
             currentRound={live.currentRound}
@@ -413,7 +435,7 @@ function App() {
             statusText={live.statusText}
             error={live.error}
             player={live.player}
-            question={submittedQuestion}
+            question={activeQuestion}
             onStop={live.stop}
           />
         )}
