@@ -1,12 +1,9 @@
+import { Icon } from "./Icon";
+
 interface Props {
   consensus: number;
   strongestAgreement: string;
   strongestDisagreement: string;
-}
-
-function consensusColor(value: number): string {
-  const hue = value * 120;
-  return `hsl(${hue}, 70%, 50%)`;
 }
 
 export function ConsensusGauge({
@@ -15,79 +12,59 @@ export function ConsensusGauge({
   strongestDisagreement,
 }: Props) {
   const pct = Math.round(consensus * 100);
-  const radius = 70;
-  const stroke = 12;
-  const circumference = Math.PI * radius;
-  const offset = circumference * (1 - consensus);
+  const turns = Math.max(0, Math.min(1, consensus));
 
   return (
-    <div className="rounded-xl bg-surface-2 border border-white/5 p-5">
-      <h3 className="text-sm font-semibold text-white mb-4">
-        Overall Consensus
+    <div className="h-full rounded-sm bg-surface-container-low p-8 flex flex-col">
+      <div className="font-label text-[10px] uppercase tracking-[0.25em] text-secondary mb-1">
+        Active Session Consensus
+      </div>
+      <h3 className="font-headline italic text-xl text-on-surface mb-6">
+        Harmonic Convergence
       </h3>
 
-      {/* SVG gauge */}
-      <div className="flex justify-center mb-4">
-        <svg
-          width={radius * 2 + stroke}
-          height={radius + stroke + 10}
-          viewBox={`0 0 ${radius * 2 + stroke} ${radius + stroke + 10}`}
+      <div className="flex items-center justify-center mb-6">
+        <div
+          className="relative w-48 h-48 rounded-full flex items-center justify-center"
+          style={{
+            background: `conic-gradient(var(--color-primary) 0% ${turns * 100}%, var(--color-surface-container-high) ${turns * 100}% 100%)`,
+          }}
+          role="img"
+          aria-label={`${pct}% consensus`}
         >
-          {/* Background arc */}
-          <path
-            d={`M ${stroke / 2} ${radius + stroke / 2} A ${radius} ${radius} 0 0 1 ${radius * 2 + stroke / 2} ${radius + stroke / 2}`}
-            fill="none"
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth={stroke}
-            strokeLinecap="round"
-          />
-          {/* Filled arc */}
-          <path
-            d={`M ${stroke / 2} ${radius + stroke / 2} A ${radius} ${radius} 0 0 1 ${radius * 2 + stroke / 2} ${radius + stroke / 2}`}
-            fill="none"
-            stroke={consensusColor(consensus)}
-            strokeWidth={stroke}
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            className="transition-all duration-1000 ease-out"
-          />
-          {/* Percentage text */}
-          <text
-            x={radius + stroke / 2}
-            y={radius - 5}
-            textAnchor="middle"
-            className="text-2xl font-bold"
-            fill="white"
-            fontSize="28"
-          >
-            {pct}%
-          </text>
-          <text
-            x={radius + stroke / 2}
-            y={radius + 16}
-            textAnchor="middle"
-            fill="rgba(255,255,255,0.4)"
-            fontSize="10"
-          >
-            consensus
-          </text>
-        </svg>
+          <div className="absolute w-40 h-40 bg-surface-container-low rounded-full flex flex-col items-center justify-center text-center">
+            <span className="font-headline text-5xl font-bold text-primary leading-none">
+              {pct}%
+            </span>
+            <span className="font-label text-[9px] uppercase tracking-[0.25em] text-secondary mt-2">
+              Unified Core
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* Strongest points */}
-      <div className="space-y-2">
-        <div className="flex items-start gap-2 text-xs">
-          <span className="shrink-0 w-5 h-5 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-[10px]">
-            ✓
+      <div className="space-y-3 mt-auto">
+        <div className="flex items-start gap-3 text-sm">
+          <span className="shrink-0 w-7 h-7 rounded-sm bg-secondary-container text-on-secondary-container flex items-center justify-center">
+            <Icon name="check" className="text-[16px]" filled />
           </span>
-          <p className="text-gray-400 leading-snug">{strongestAgreement}</p>
+          <p className="text-on-surface-variant leading-snug font-body">
+            <span className="font-label text-[10px] uppercase tracking-[0.2em] text-secondary block mb-0.5">
+              Strongest Agreement
+            </span>
+            {strongestAgreement}
+          </p>
         </div>
-        <div className="flex items-start gap-2 text-xs">
-          <span className="shrink-0 w-5 h-5 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-[10px]">
-            ✗
+        <div className="flex items-start gap-3 text-sm">
+          <span className="shrink-0 w-7 h-7 rounded-sm bg-error-container text-on-error-container flex items-center justify-center">
+            <Icon name="bolt" className="text-[16px]" filled />
           </span>
-          <p className="text-gray-400 leading-snug">{strongestDisagreement}</p>
+          <p className="text-on-surface-variant leading-snug font-body">
+            <span className="font-label text-[10px] uppercase tracking-[0.2em] text-primary block mb-0.5">
+              Strongest Disagreement
+            </span>
+            {strongestDisagreement}
+          </p>
         </div>
       </div>
     </div>

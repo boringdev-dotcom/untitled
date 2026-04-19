@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Icon } from "./Icon";
 
 interface Props {
   title: string;
@@ -6,6 +7,7 @@ interface Props {
   badge?: string;
   defaultOpen?: boolean;
   children: React.ReactNode;
+  eyebrow?: string;
 }
 
 export function CollapsibleSection({
@@ -14,51 +16,49 @@ export function CollapsibleSection({
   badge,
   defaultOpen = false,
   children,
+  eyebrow,
 }: Props) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <section className="mb-10">
+    <section className="mb-12">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-start gap-3 text-left cursor-pointer group mb-4"
+        className="w-full flex items-start gap-4 text-left cursor-pointer group"
+        aria-expanded={open}
       >
         <span
-          className="mt-1 shrink-0 text-gray-500 group-hover:text-gray-300 transition-transform duration-200"
-          style={{ transform: open ? "rotate(90deg)" : "rotate(0deg)" }}
+          className="mt-2 shrink-0 text-secondary group-hover:text-primary transition-all duration-300"
+          style={{
+            transform: open ? "rotate(90deg)" : "rotate(0deg)",
+          }}
+          aria-hidden="true"
         >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M6 3L11 8L6 13"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <Icon name="chevron_right" className="text-[20px]" />
         </span>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-white group-hover:text-gray-200 transition-colors">
+          {eyebrow && (
+            <div className="font-label text-[10px] uppercase tracking-[0.3em] text-secondary mb-1.5">
+              {eyebrow}
+            </div>
+          )}
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <h2 className="font-headline text-2xl md:text-3xl italic font-bold text-on-surface group-hover:text-primary transition-colors">
               {title}
             </h2>
             {badge && (
-              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/5 text-gray-500">
+              <span className="font-label text-[10px] uppercase tracking-[0.22em] text-secondary">
                 {badge}
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-400 mt-0.5">{description}</p>
+          <p className="font-body text-sm text-on-surface-variant mt-1 leading-relaxed max-w-2xl">
+            {description}
+          </p>
         </div>
       </button>
-      {open && children}
+      {open && <div className="mt-8 pl-0 md:pl-10">{children}</div>}
     </section>
   );
 }
