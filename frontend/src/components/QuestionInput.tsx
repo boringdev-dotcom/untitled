@@ -104,12 +104,16 @@ export function QuestionInput({
           Thematic Presets
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {EXAMPLE_QUESTIONS.map((eq, i) => (
+          {EXAMPLE_QUESTIONS.map((eq, i) => {
+            const isLast = i === EXAMPLE_QUESTIONS.length - 1;
+            return (
             <button
               key={eq.text}
               type="button"
               onClick={() => setQuestion(eq.text)}
-              className="group text-left px-5 py-4 rounded-sm bg-surface-container-low hover:bg-surface-container-lowest ghost-border transition-all cursor-pointer flex items-center gap-4 border-l-2 border-secondary/30 hover:border-secondary"
+              className={`group text-left px-5 py-4 rounded-sm bg-surface-container-low hover:bg-surface-container-lowest ghost-border transition-all cursor-pointer flex items-center gap-4 border-l-2 border-secondary/30 hover:border-secondary ${
+                isLast ? "sm:col-span-2 sm:mx-auto sm:w-full sm:max-w-xl" : ""
+              }`}
               style={{ animationDelay: `${i * 60}ms` }}
             >
               <Icon
@@ -120,7 +124,8 @@ export function QuestionInput({
                 {eq.text}
               </span>
             </button>
-          ))}
+            );
+          })}
         </div>
       </div>
     </form>
