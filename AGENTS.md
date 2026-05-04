@@ -15,7 +15,7 @@ This is a multi-agent scripture discussion platform with two services:
 - `GEMINI_API_KEY` — Google Gemini API key (must be valid / not expired)
 - `DATABASE_URL` — PostgreSQL connection string (the backend also reads from `backend/.env`)
 
-The backend reads `.env` from its working directory (`backend/.env`). If `DATABASE_URL` or `GEMINI_API_KEY` are set as environment variables, they override values in `.env`.
+The backend reads `.env` from its working directory (`backend/.env`). If `DATABASE_URL` or `GEMINI_API_KEY` are set as shell environment variables, they override values in `.env`. When starting the backend in a tmux session, ensure the env vars are available in that session (they may not inherit from the parent shell).
 
 ### Starting services
 
