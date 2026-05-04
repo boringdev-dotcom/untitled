@@ -104,23 +104,32 @@ export function QuestionInput({
           Thematic Presets
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {EXAMPLE_QUESTIONS.map((eq, i) => (
-            <button
-              key={eq.text}
-              type="button"
-              onClick={() => setQuestion(eq.text)}
-              className="group text-left px-5 py-4 rounded-sm bg-surface-container-low hover:bg-surface-container-lowest ghost-border transition-all cursor-pointer flex items-center gap-4 border-l-2 border-secondary/30 hover:border-secondary"
-              style={{ animationDelay: `${i * 60}ms` }}
-            >
-              <Icon
-                name={eq.icon}
-                className="text-[20px] text-secondary shrink-0 group-hover:text-primary transition-colors"
-              />
-              <span className="font-body text-sm text-on-surface-variant group-hover:text-on-surface transition-colors italic">
-                {eq.text}
-              </span>
-            </button>
-          ))}
+          {EXAMPLE_QUESTIONS.map((eq, i) => {
+            const isLastOdd =
+              EXAMPLE_QUESTIONS.length % 2 === 1 &&
+              i === EXAMPLE_QUESTIONS.length - 1;
+            return (
+              <button
+                key={eq.text}
+                type="button"
+                onClick={() => setQuestion(eq.text)}
+                className={`group text-left px-5 py-4 rounded-sm bg-surface-container-low hover:bg-surface-container-lowest ghost-border transition-all cursor-pointer flex items-center gap-4 border-l-2 border-secondary/30 hover:border-secondary ${
+                  isLastOdd
+                    ? "sm:col-span-2 sm:mx-auto sm:w-full sm:max-w-2xl sm:justify-center"
+                    : ""
+                }`}
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
+                <Icon
+                  name={eq.icon}
+                  className="text-[20px] text-secondary shrink-0 group-hover:text-primary transition-colors"
+                />
+                <span className="font-body text-sm text-on-surface-variant group-hover:text-on-surface transition-colors italic">
+                  {eq.text}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </form>
