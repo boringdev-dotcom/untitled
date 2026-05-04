@@ -65,6 +65,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Fill the *visible* viewport on mobile (100vh can exceed it when browser chrome hides). */
+html {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 body {
   background-image:
     radial-gradient(
@@ -79,6 +85,14 @@ body {
     );
   background-attachment: fixed;
   min-height: 100vh;
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 .font-headline {
